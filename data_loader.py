@@ -222,6 +222,15 @@ def process_bert(data, tokenizer, vocab):
             input_ids = enc_full["input_ids"]
             offsets = None
 
+        # Respect tokenizer/model maximum length to avoid exceeding model position embeddings.
+        max_len = getattr(tokenizer, "model_max_length", None)
+        if max_len is not None and len(input_ids) > max_len:
+            input_ids = input_ids[:max_len]
+            if "attention_mask" in enc_full:
+                enc_full["attention_mask"] = enc_full["attention_mask"][:max_len]
+            if offsets is not None:
+                offsets = offsets[:max_len]
+
         # Detect if the dataset provides word tokens (word-indexed spans)
         has_word_tokens = "tokens" in instance or "words" in instance
         words = instance.get("tokens", instance.get("words", None))
@@ -262,6 +271,18 @@ def process_bert(data, tokenizer, vocab):
             token_to_char = [(i, i + 1) for i in range(len(_inputs) - 2)]
             length = len(_inputs) - 2
 
+        # If tokenizer/model has a max length, ensure `length` does not exceed available token slots
+        if max_len is not None:
+            # count special tokens (approximate)
+            num_special = 0
+            if getattr(tokenizer, "cls_token_id", None) is not None:
+                num_special += 1
+            if getattr(tokenizer, "sep_token_id", None) is not None:
+                num_special += 1
+            max_tokens_allowed = max_len - num_special
+            if max_tokens_allowed is not None and length > max_tokens_allowed:
+                length = max_tokens_allowed
+
         _word_mask1d = np.array([1] * length)
         _word_mask2d = np.triu(np.ones((length, length), dtype=bool))
         _triu_mask2d = np.ones((length, length), dtype=bool)
@@ -287,7 +308,12 @@ def process_bert(data, tokenizer, vocab):
                     token_indices.append(ti)
             if not token_indices:
                 return 0, 0
-            return token_indices[0], token_indices[-1]
+            s_idx = token_indices[0]
+            e_idx = token_indices[-1]
+            # clamp to allowed length
+            s_idx = max(0, min(s_idx, length - 1))
+            e_idx = max(0, min(e_idx, length - 1))
+            return s_idx, e_idx
 
         # helper to map a word-span (start_word_idx, end_word_idx_inclusive) to subword token span
         def word_span_to_token_span(word_start, word_end_inclusive):
@@ -299,6 +325,9 @@ def process_bert(data, tokenizer, vocab):
                 word_end_inclusive = len(word_to_subword) - 1
             ts = word_to_subword[word_start][0]
             te = word_to_subword[word_end_inclusive][1]
+            # clamp to allowed length
+            ts = max(0, min(ts, length - 1))
+            te = max(0, min(te, length - 1))
             return ts, te
 
         for event in events:
