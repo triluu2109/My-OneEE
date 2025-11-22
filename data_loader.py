@@ -13,7 +13,8 @@ from collections import defaultdict
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # dis2idx = np.zeros((1000), dtype="int64")
-# dis2idx[1] = 1
+# dis2idx
+# [1] = 1
 # dis2idx[2:] = 2
 # dis2idx[4:] = 3
 # dis2idx[8:] = 4
