@@ -210,10 +210,17 @@ def process_bert(data, tokenizer, vocab):
 
         text = instance["content"].lower()
 
-        # Full encoding for BERT to get input ids, attention mask and offsets
-        enc_full = tokenizer(text, add_special_tokens=True, return_attention_mask=True, return_offsets_mapping=True)
-        input_ids = enc_full["input_ids"]
-        offsets = enc_full.get("offset_mapping", None)
+        # Full encoding for BERT to get input ids, attention mask and offsets when available.
+        # Some tokenizers (the Python slow tokenizers) do not support `return_offsets_mapping`.
+        if getattr(tokenizer, "is_fast", False):
+            enc_full = tokenizer(text, add_special_tokens=True, return_attention_mask=True, return_offsets_mapping=True)
+            input_ids = enc_full["input_ids"]
+            offsets = enc_full.get("offset_mapping", None)
+        else:
+            # slow tokenizer: do not request offsets (not supported).
+            enc_full = tokenizer(text, add_special_tokens=True, return_attention_mask=True)
+            input_ids = enc_full["input_ids"]
+            offsets = None
 
         # Detect if the dataset provides word tokens (word-indexed spans)
         has_word_tokens = "tokens" in instance or "words" in instance
@@ -240,14 +247,19 @@ def process_bert(data, tokenizer, vocab):
                     continue
                 token_to_char.append((s, e))
 
-        # Determine length (number of model tokens excluding special tokens)
+        # Determine length (number of model tokens excluding special tokens).
+        # If we have neither offsets nor word-to-subword mapping, fall back to per-character tokens
         if token_to_char:
             length = len(token_to_char)
         elif word_to_subword is not None:
             length = sum((e - s + 1) for s, e in word_to_subword)
         else:
-            # fallback: per-character tokenization
+            # fallback: per-character tokenization (keeps 1:1 char -> token mapping)
             _inputs = [tokenizer.cls_token_id] + tokenizer.convert_tokens_to_ids([x for x in text]) + [tokenizer.sep_token_id]
+            input_ids = _inputs
+            enc_full["attention_mask"] = [1] * len(_inputs)
+            offsets = None
+            token_to_char = [(i, i + 1) for i in range(len(_inputs) - 2)]
             length = len(_inputs) - 2
 
         _word_mask1d = np.array([1] * length)
