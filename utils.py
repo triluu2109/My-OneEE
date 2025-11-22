@@ -1,6 +1,7 @@
 import logging
 import time
 import pickle
+import os
 
 
 def get_logger(dataset):
@@ -9,6 +10,9 @@ def get_logger(dataset):
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter("%(asctime)s - %(levelname)s: %(message)s",
                                   datefmt='%Y-%m-%d %H:%M:%S')
+
+    if not os.path.exists("./log/"):
+        os.makedirs("./log/")
 
     file_handler = logging.FileHandler(pathname)
     file_handler.setLevel(logging.DEBUG)
