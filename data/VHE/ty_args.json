@@ -1,0 +1,238 @@
+{
+    "die": [
+        "theme",
+        "agent",
+        "temporal",
+        "location",
+        "content",
+        "experiencer",
+        "force"
+    ],
+    "pardon": [
+        "theme",
+        "agent",
+        "temporal",
+        "beneficiary"
+    ],
+    "attack": [
+        "agent",
+        "theme",
+        "location",
+        "temporal",
+        "instrument",
+        "force",
+        "goal",
+        "source"
+    ],
+    "be-born": [
+        "theme",
+        "agent",
+        "temporal",
+        "location"
+    ],
+    "start-position": [
+        "agent",
+        "goal",
+        "theme",
+        "temporal",
+        "beneficiary",
+        "location",
+        "source",
+        "content"
+    ],
+    "natural-phenomenon": [
+        "temporal",
+        "location",
+        "theme",
+        "agent",
+        "force",
+        "goal"
+    ],
+    "transport": [
+        "source",
+        "theme",
+        "location",
+        "agent",
+        "goal",
+        "temporal",
+        "instrument"
+    ],
+    "phone-write": [
+        "agent",
+        "theme",
+        "goal",
+        "content",
+        "temporal",
+        "beneficiary"
+    ],
+    "marry": [
+        "agent",
+        "theme",
+        "beneficiary",
+        "temporal",
+        "location"
+    ],
+    "end-org": [
+        "theme",
+        "source",
+        "goal",
+        "temporal"
+    ],
+    "end-position": [
+        "theme",
+        "agent",
+        "temporal",
+        "goal",
+        "source",
+        "content",
+        "location"
+    ],
+    "merge-org": [
+        "agent",
+        "theme",
+        "goal"
+    ],
+    "arrest-jail": [
+        "agent",
+        "theme",
+        "temporal",
+        "location",
+        "beneficiary",
+        "goal"
+    ],
+    "transfer-ownership": [
+        "agent",
+        "theme",
+        "beneficiary",
+        "source",
+        "temporal",
+        "goal",
+        "location",
+        "content"
+    ],
+    "release-parole": [
+        "theme",
+        "temporal",
+        "agent",
+        "location",
+        "beneficiary"
+    ],
+    "trial-hearing": [
+        "agent",
+        "theme",
+        "location",
+        "content",
+        "temporal"
+    ],
+    "meet": [
+        "agent",
+        "theme",
+        "location",
+        "temporal",
+        "content",
+        "goal",
+        "experiencer"
+    ],
+    "injure": [
+        "theme",
+        "agent",
+        "instrument",
+        "temporal",
+        "force"
+    ],
+    "execute": [
+        "theme",
+        "location",
+        "agent",
+        "temporal"
+    ],
+    "transfer-money": [
+        "theme",
+        "beneficiary",
+        "agent",
+        "temporal",
+        "content",
+        "location"
+    ],
+    "natural-disaster": [
+        "temporal",
+        "goal",
+        "force",
+        "location",
+        "theme",
+        "content",
+        "source"
+    ],
+    "nominate": [
+        "temporal",
+        "content",
+        "theme",
+        "agent",
+        "goal"
+    ],
+    "sentence": [
+        "theme",
+        "content",
+        "agent",
+        "temporal",
+        "goal",
+        "experiencer"
+    ],
+    "elect": [
+        "agent",
+        "theme",
+        "goal",
+        "temporal",
+        "content"
+    ],
+    "demonstrate": [
+        "agent",
+        "location",
+        "theme",
+        "temporal",
+        "goal"
+    ],
+    "convict": [
+        "temporal",
+        "theme",
+        "agent"
+    ],
+    "start-org": [
+        "agent",
+        "theme",
+        "temporal",
+        "goal",
+        "location"
+    ],
+    "fine": [
+        "content",
+        "theme",
+        "agent"
+    ],
+    "divorce": [
+        "agent",
+        "theme",
+        "temporal",
+        "location"
+    ],
+    "sue": [
+        "agent",
+        "theme",
+        "location"
+    ],
+    "charge-indict": [
+        "agent",
+        "theme",
+        "temporal"
+    ],
+    "extradite": [
+        "theme",
+        "goal",
+        "agent"
+    ],
+    "appeal": [
+        "agent",
+        "theme",
+        "beneficiary"
+    ]
+}
