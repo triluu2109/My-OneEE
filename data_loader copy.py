@@ -208,57 +208,19 @@ def process_bert(data, tokenizer, vocab):
     # data = data[:100]
     for ins_id, instance in tqdm.tqdm(enumerate(data), total=len(data)):
 
-        text = instance["content"].lower()
-
-        # Full encoding for BERT to get input ids, attention mask and offsets
-        enc_full = tokenizer(text, add_special_tokens=True, return_attention_mask=True, return_offsets_mapping=True)
-        input_ids = enc_full["input_ids"]
-        offsets = enc_full.get("offset_mapping", None)
-
-        # Detect if the dataset provides word tokens (word-indexed spans)
-        has_word_tokens = "tokens" in instance or "words" in instance
-        words = instance.get("tokens", instance.get("words", None))
-
-        word_to_subword = None
-        # If we have word tokens, build a mapping from word index -> subword token index range
-        if has_word_tokens and words is not None:
-            word_to_subword = []  # list of (sub_start, sub_end) per word
-            cur = 0
-            for w in words:
-                enc_w = tokenizer(w, add_special_tokens=False)
-                n_sub = len(enc_w.get("input_ids", []))
-                if n_sub == 0:
-                    n_sub = 1
-                word_to_subword.append((cur, cur + n_sub - 1))
-                cur += n_sub
-
-        # Build token -> char offsets excluding special tokens (CLS/SEP)
-        token_to_char = []
-        if offsets is not None:
-            for (s, e) in offsets:
-                if s == e == 0:
-                    continue
-                token_to_char.append((s, e))
-
-        # Determine length (number of model tokens excluding special tokens)
-        if token_to_char:
-            length = len(token_to_char)
-        elif word_to_subword is not None:
-            length = sum((e - s + 1) for s, e in word_to_subword)
-        else:
-            # fallback: per-character tokenization
-            _inputs = [tokenizer.cls_token_id] + tokenizer.convert_tokens_to_ids([x for x in text]) + [tokenizer.sep_token_id]
-            length = len(_inputs) - 2
+        _inputs = [tokenizer.cls_token_id] + tokenizer.convert_tokens_to_ids(
+            [x for x in instance["content"].lower()]) + [tokenizer.sep_token_id]
+        length = len(_inputs) - 2
 
         _word_mask1d = np.array([1] * length)
         _word_mask2d = np.triu(np.ones((length, length), dtype=bool))
+        # _triu_mask2d = np.triu(np.ones((length, length), dtype=bool), k=1)
         _triu_mask2d = np.ones((length, length), dtype=bool)
         np.fill_diagonal(_triu_mask2d, 0)
         _tri_labels = np.zeros((vocab.tri_label_num, length, length), dtype=bool)
         _arg_labels = np.zeros((vocab.tri_label_num, length, length), dtype=bool)
         _role_labels = np.zeros((vocab.tri_label_num, length, length, vocab.rol_label_num), dtype=bool)
-        _att_mask = np.array(enc_full.get("attention_mask", [1] * len(input_ids)))
-
+        _att_mask = np.array([1] * len(_inputs))
         if "event_type" in instance:
             pos_event = vocab.label2id(instance["event_type"], "tri")
         else:
@@ -266,75 +228,34 @@ def process_bert(data, tokenizer, vocab):
         event_set = set()
         _gold_tuples = {k: set() for k in ["ti", "tc", "ai", "ac"]}
         events = instance["events"]
-
-        # helper to map a character-span (start, end_exclusive) to token index span (inclusive)
-        def char_span_to_token_span(char_start, char_end_exclusive):
-            token_indices = []
-            for ti, (ts, te) in enumerate(token_to_char):
-                if ts < char_end_exclusive and te > char_start:
-                    token_indices.append(ti)
-            if not token_indices:
-                return 0, 0
-            return token_indices[0], token_indices[-1]
-
-        # helper to map a word-span (start_word_idx, end_word_idx_inclusive) to subword token span
-        def word_span_to_token_span(word_start, word_end_inclusive):
-            if word_to_subword is None:
-                return 0, 0
-            if word_start < 0:
-                word_start = 0
-            if word_end_inclusive >= len(word_to_subword):
-                word_end_inclusive = len(word_to_subword) - 1
-            ts = word_to_subword[word_start][0]
-            te = word_to_subword[word_end_inclusive][1]
-            return ts, te
-
         for event in events:
             trigger = event["trigger"]
-            span = trigger["span"]
-
-            # Prefer word-indexed mapping if tokens/words provided and span looks like word indices
-            if has_word_tokens and isinstance(span[0], int) and isinstance(span[1], int) and words is not None:
-                # Many datasets use inclusive word-end indices; if the end equals number of words treat it as exclusive
-                w_start = span[0]
-                w_end = span[1]
-                if w_end == len(words):
-                    w_end = w_end - 1
-                t_s, t_e = word_span_to_token_span(w_start, w_end)
-            else:
-                # assume character-span [start, end) as before
-                t_s_char, t_e_char = span
-                t_s, t_e = char_span_to_token_span(t_s_char, t_e_char)
-
+            t_s, t_e = trigger["span"]
+            t_e = t_e - 1
             event_type = vocab.label2id(event["type"], "tri")
             _tri_labels[event_type, t_s, t_e] = 1
             _gold_tuples["ti"].add((t_s, t_e))
             _gold_tuples["tc"].add((t_s, t_e, event_type))
             event_set.add(event_type)
-
             args = event["args"]
             for k, v in args.items():
                 for arg in v:
-                    span_a = arg["span"]
-                    if has_word_tokens and words is not None and isinstance(span_a[0], int) and isinstance(span_a[1], int):
-                        a_s_word = span_a[0]
-                        a_e_word = span_a[1]
-                        if a_e_word == len(words):
-                            a_e_word = a_e_word - 1
-                        a_s, a_e = word_span_to_token_span(a_s_word, a_e_word)
-                    else:
-                        a_s_char, a_e_char = span_a
-                        a_s, a_e = char_span_to_token_span(a_s_char, a_e_char)
-
+                    a_s, a_e = arg["span"]
+                    a_e = a_e - 1
                     role = vocab.label2id(k, "rol")
                     _arg_labels[event_type, a_s, a_e] = 1
                     _role_labels[event_type, t_s:t_e+1, a_s:a_e+1, role] = 1
+                    # if t_s < a_s:
+                    #     _role_labels[t_s, a_s, event_type, role] = 1
+                    # else:
+                    #     _role_labels[a_s, t_s, event_type, role] = 1
                     _gold_tuples["ai"].add((a_s, a_e, event_type))
                     _gold_tuples["ac"].add((a_s, a_e, event_type, role))
 
         neg_event = list(total_event_set - event_set)
+        # neg_probs = [vocab.tri_id2prob[x] for x in neg_event]
 
-        inputs.append(input_ids)
+        inputs.append(_inputs)
         att_mask.append(_att_mask)
         word_mask1d.append(_word_mask1d)
         word_mask2d.append(_word_mask2d)
