@@ -1,0 +1,221 @@
+{
+  "Start-org": [
+    "Agent",
+    "Time",
+    "Org",
+    "Place"
+  ],
+  "Die": [
+    "Victim",
+    "Agent",
+    "Place",
+    "Instrument",
+    "Time"
+  ],
+  "Injure": [
+    "Victim",
+    "Instrument",
+    "Place",
+    "Time",
+    "Agent"
+  ],
+  "Demonstrate": [
+    "Place",
+    "Time",
+    "Entity"
+  ],
+  "Attack": [
+    "Instrument",
+    "Attacker",
+    "Place",
+    "Target",
+    "Time"
+  ],
+  "Transfer-money": [
+    "Giver",
+    "Money",
+    "Recipient",
+    "Beneficiary",
+    "Time",
+    "Place"
+  ],
+  "Elect": [
+    "Position",
+    "Time",
+    "Person",
+    "Entity",
+    "Place"
+  ],
+  "Transport": [
+    "Agent",
+    "Origin",
+    "Artifact",
+    "Destination",
+    "Time",
+    "Vehicle"
+  ],
+  "Phone-write": [
+    "Entity",
+    "Time"
+  ],
+  "Arrest-jail": [
+    "Person",
+    "Agent",
+    "Place",
+    "Time",
+    "Crime"
+  ],
+  "Execute": [
+    "Person",
+    "Agent",
+    "Time",
+    "Crime",
+    "Place"
+  ],
+  "Sue": [
+    "Plaintiff",
+    "Defendant",
+    "Crime",
+    "Place",
+    "Time",
+    "Adjudicator"
+  ],
+  "Charge-indict": [
+    "Defendant",
+    "Prosecutor",
+    "Time",
+    "Crime",
+    "Adjudicator",
+    "Place"
+  ],
+  "Trial-hearing": [
+    "Time",
+    "Defendant",
+    "Crime",
+    "Adjudicator",
+    "Place",
+    "Prosecutor"
+  ],
+  "End-org": [
+    "Time",
+    "Org",
+    "Place"
+  ],
+  "Merge-org": [
+    "Org",
+    "Time"
+  ],
+  "Declare-bankruptcy": [
+    "Time",
+    "Org",
+    "Place"
+  ],
+  "Release-parole": [
+    "Person",
+    "Entity",
+    "Crime",
+    "Time",
+    "Place"
+  ],
+  "Marry": [
+    "Person",
+    "Time",
+    "Place"
+  ],
+  "Sentence": [
+    "Sentence",
+    "Defendant",
+    "Crime",
+    "Time",
+    "Adjudicator",
+    "Place"
+  ],
+  "Transfer-ownership": [
+    "Seller",
+    "Artifact",
+    "Price",
+    "Buyer",
+    "Time",
+    "Beneficiary",
+    "Place",
+    "Money"
+  ],
+  "Meet": [
+    "Entity",
+    "Time",
+    "Place"
+  ],
+  "End-position": [
+    "Position",
+    "Person",
+    "Entity",
+    "Time",
+    "Place"
+  ],
+  "Pardon": [
+    "Defendant",
+    "Adjudicator",
+    "Time",
+    "Crime",
+    "Place"
+  ],
+  "Divorce": [
+    "Person",
+    "Time",
+    "Place"
+  ],
+  "Start-position": [
+    "Position",
+    "Person",
+    "Entity",
+    "Time",
+    "Place"
+  ],
+  "Extradite": [
+    "Origin",
+    "Person",
+    "Time",
+    "Agent",
+    "Destination"
+  ],
+  "Be-born": [
+    "Person",
+    "Time",
+    "Place"
+  ],
+  "Convict": [
+    "Crime",
+    "Defendant",
+    "Place",
+    "Time",
+    "Adjudicator"
+  ],
+  "Nominate": [
+    "Person",
+    "Agent",
+    "Position",
+    "Time",
+    "Place"
+  ],
+  "Arquit": [
+    "Defendant",
+    "Crime",
+    "Time",
+    "Adjudicator"
+  ],
+  "Appeal": [
+    "Adjudicator",
+    "Time",
+    "Defendant",
+    "Prosecutor",
+    "Crime"
+  ],
+  "Fine": [
+    "Entity",
+    "Money",
+    "Adjudicator",
+    "Crime",
+    "Time",
+    "Place"
+  ]
+}
