@@ -226,8 +226,8 @@ def process_bert(data, tokenizer, vocab):
         _arg_labels = np.zeros((vocab.tri_label_num, length, length), dtype=bool)
         _role_labels = np.zeros((vocab.tri_label_num, length, length, vocab.rol_label_num), dtype=bool)
         _att_mask = np.array([1] * len(_inputs))
-        if "event_type" in instance:
-            pos_event = vocab.label2id(instance["event_type"], "tri")
+        if instance['events']:
+            pos_event = vocab.label2id(instance["events"][0]['type'], "tri")
         else:
             pos_event = 0
         event_set = set()
