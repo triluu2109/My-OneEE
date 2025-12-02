@@ -191,7 +191,6 @@ class RelationDataset(Dataset):
     def __len__(self):
         return len(self.inputs)
 
-MAX_SEQ_LEN = 256  # PhoBERT total tokens (including <s> and </s>)
 
 def process_bert(data, tokenizer, vocab):
     inputs = []
@@ -207,95 +206,59 @@ def process_bert(data, tokenizer, vocab):
 
     total_event_set = set([i for i in range(vocab.tri_label_num)])
 
+    # data = data[:100]
     for ins_id, instance in tqdm.tqdm(enumerate(data), total=len(data)):
-        raw_words = instance["content"].split()
 
-        encoding = tokenizer(
-            raw_words,
-            is_split_into_words=True,
-            add_special_tokens=True,
-            truncation=True,
-            max_length=MAX_SEQ_LEN,
-        )
-        _inputs = encoding["input_ids"]
-        _att_mask = encoding["attention_mask"]
+        pieces = [x for x in instance["content"].lower().split()]
 
-        token_map = {}
-        cursor = 1
-        for w_idx, word in enumerate(raw_words):
-            word_ids = tokenizer.encode(word, add_special_tokens=False)
-            token_len = len(word_ids)
-
-            start = cursor
-            end = cursor + token_len
-
-            token_map[w_idx] = (start, end)
-            cursor += token_len
-
+        _inputs = [tokenizer.cls_token_id] \
+                + tokenizer.convert_tokens_to_ids(pieces) \
+                + [tokenizer.sep_token_id]
+                
         length = len(_inputs) - 2
-        if length <= 0:
-            continue
 
         _word_mask1d = np.array([1] * length)
         _word_mask2d = np.triu(np.ones((length, length), dtype=bool))
+        # _triu_mask2d = np.triu(np.ones((length, length), dtype=bool), k=1)
         _triu_mask2d = np.ones((length, length), dtype=bool)
         np.fill_diagonal(_triu_mask2d, 0)
-
         _tri_labels = np.zeros((vocab.tri_label_num, length, length), dtype=bool)
         _arg_labels = np.zeros((vocab.tri_label_num, length, length), dtype=bool)
-        _role_labels = np.zeros(
-            (vocab.tri_label_num, length, length, vocab.rol_label_num),
-            dtype=bool,
-        )
-
-        if instance["events"]:
-            pos_event = vocab.label2id(instance["events"][0]["type"], "tri")
+        _role_labels = np.zeros((vocab.tri_label_num, length, length, vocab.rol_label_num), dtype=bool)
+        _att_mask = np.array([1] * len(_inputs))
+        if instance['events']:
+            pos_event = vocab.label2id(instance["events"][0]['type'], "tri")
         else:
             pos_event = 0
-
         event_set = set()
         _gold_tuples = {k: set() for k in ["ti", "tc", "ai", "ac"]}
-        events = instance.get("events", [])
-
+        events = instance["events"]
         for event in events:
-            event_type = vocab.label2id(event["type"], "tri")
-            event_set.add(event_type)
-
             trigger = event["trigger"]
-            w_ts, w_te = trigger["span"]
-
-            if w_ts >= len(token_map) or (w_te - 1) >= len(token_map):
-                continue
-
-            t_s = token_map[w_ts][0] - 1
-            t_e = token_map[w_te - 1][1] - 1 - 1
-
-            if 0 <= t_s < length and 0 <= t_e < length:
-                _tri_labels[event_type, t_s, t_e] = 1
-                _gold_tuples["ti"].add((t_s, t_e))
-                _gold_tuples["tc"].add((t_s, t_e, event_type))
-
+            t_s, t_e = trigger["span"]
+            t_e = t_e - 1
+            event_type = vocab.label2id(event["type"], "tri")
+            _tri_labels[event_type, t_s, t_e] = 1
+            _gold_tuples["ti"].add((t_s, t_e))
+            _gold_tuples["tc"].add((t_s, t_e, event_type))
+            event_set.add(event_type)
             args = event["args"]
-            for role_name, arg_list in args.items():
-                role_id = vocab.label2id(role_name, "rol")
-
-                for arg in arg_list:
-                    w_as, w_ae = arg["span"]
-
-                    if w_as >= len(token_map) or (w_ae - 1) >= len(token_map):
-                        continue
-
-                    a_s = token_map[w_as][0] - 1
-                    a_e = token_map[w_ae - 1][1] - 1 - 1
-
-                    if 0 <= a_s < length and 0 <= a_e < length:
-                        _arg_labels[event_type, a_s, a_e] = 1
-                        _role_labels[event_type, t_s:t_e+1, a_s:a_e+1, role_id] = 1
-
-                        _gold_tuples["ai"].add((a_s, a_e, event_type))
-                        _gold_tuples["ac"].add((a_s, a_e, event_type, role_id))
+            for k, v in args.items():
+                for arg in v:
+                    a_s, a_e = arg["span"]
+                    a_e = a_e - 1
+                    role = vocab.label2id(k, "rol")
+                    _arg_labels[event_type, a_s, a_e] = 1
+                    _role_labels[event_type, t_s:t_e+1, a_s:a_e+1, role] = 1
+                    # if t_s < a_s:
+                    #     _role_labels[t_s, a_s, event_type, role] = 1
+                    # else:
+                    #     _role_labels[a_s, t_s, event_type, role] = 1
+                    _gold_tuples["ai"].add((a_s, a_e, event_type))
+                    _gold_tuples["ac"].add((a_s, a_e, event_type, role))
 
         neg_event = list(total_event_set - event_set)
+        # neg_probs = [vocab.tri_id2prob[x] for x in neg_event]
 
         inputs.append(_inputs)
         att_mask.append(_att_mask)
@@ -308,18 +271,7 @@ def process_bert(data, tokenizer, vocab):
         gold_tuples.append(_gold_tuples)
         event_list.append((pos_event, neg_event))
 
-    return (
-        inputs,
-        att_mask,
-        word_mask1d,
-        word_mask2d,
-        triu_mask2d,
-        tri_labels,
-        arg_labels,
-        role_labels,
-        gold_tuples,
-        event_list,
-    )
+    return inputs, att_mask, word_mask1d, word_mask2d, triu_mask2d, tri_labels, arg_labels, role_labels, gold_tuples, event_list
 
 
 def fill_vocab(vocab, dataset):
