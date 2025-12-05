@@ -1,0 +1,1 @@
+{"id": "dev-00031", "content": "TRI cũng đã ký thoả_thuận 1 tỷ USD với Potevio để phân_phối Turing_Phone tại Trung_Quốc , nhưng có_thể hợp_đồng này cũng không làm cho tình_hình tài_chính khả_quan hơn , trước khi tuyên_bố phá_sản .", "events": [{"type": "Declare-bankruptcy", "trigger": {"span": [32, 33], "word": "phá_sản"}, "args": {"Org": [{"span": [0, 1], "word": "TRI"}]}}]}

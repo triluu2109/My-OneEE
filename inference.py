@@ -200,7 +200,7 @@ def main():
 
     with torch.no_grad():
         # for loader in [dev_loader, test_loader, train_loader]:
-        for loader in [dev_loader]:
+        for loader in [test_loader]:
             i = 0
             logger.info(f"==== set ====")
             for batch_id, data_batch in enumerate(loader):
