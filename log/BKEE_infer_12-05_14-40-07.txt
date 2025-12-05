@@ -1,0 +1,11 @@
+2025-12-05 14:40:07 - INFO: dict_items([('dataset', 'BKEE'), ('bert_hid_size', 768), ('tri_hid_size', 256), ('eve_hid_size', 256), ('arg_hid_size', 256), ('event_sample', 5), ('dropout', 0.5), ('epochs', 20), ('warm_epochs', 1), ('batch_size', 8), ('learning_rate', 0.001), ('weight_decay', 0.01), ('grad_clip_norm', 1.0), ('gamma', 1.0), ('bert_name', 'vinai/phobert-base'), ('bert_learning_rate', 2e-05), ('seed', -1), ('config', '.\\config\\bkee.json'), ('device', 0), ('ckpt', 'model.pt')])
+2025-12-05 14:40:07 - INFO: Loading Data
+2025-12-05 14:40:10 - INFO: 
++-------+-----------+--------+-----------+
+|  BKEE | #sentence | #event | #argument |
++-------+-----------+--------+-----------+
+| train |   10959   |  4868  |    8318   |
+|  dev  |    4301   |  1736  |    2959   |
+|  test |    3736   |  1508  |    2680   |
++-------+-----------+--------+-----------+
+2025-12-05 14:40:46 - INFO: Building Model

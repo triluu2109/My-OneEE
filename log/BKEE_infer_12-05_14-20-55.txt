@@ -1,0 +1,33 @@
+2025-12-05 14:20:55 - INFO: dict_items([('dataset', 'BKEE'), ('bert_hid_size', 768), ('tri_hid_size', 256), ('eve_hid_size', 256), ('arg_hid_size', 256), ('event_sample', 5), ('dropout', 0.5), ('epochs', 20), ('warm_epochs', 1), ('batch_size', 8), ('learning_rate', 0.001), ('weight_decay', 0.01), ('grad_clip_norm', 1.0), ('gamma', 1.0), ('bert_name', 'vinai/phobert-base'), ('bert_learning_rate', 2e-05), ('seed', -1), ('config', '.\\config\\bkee.json'), ('device', 0), ('ckpt', 'model.pt')])
+2025-12-05 14:20:55 - INFO: Loading Data
+2025-12-05 14:21:02 - INFO: 
++-------+-----------+--------+-----------+
+|  BKEE | #sentence | #event | #argument |
++-------+-----------+--------+-----------+
+| train |   10959   |  4868  |    8318   |
+|  dev  |    4301   |  1736  |    2959   |
+|  test |    3736   |  1508  |    2680   |
++-------+-----------+--------+-----------+
+2025-12-05 14:21:39 - INFO: Building Model
+2025-12-05 14:21:50 - WARNING: Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-12-05 14:22:20 - WARNING: Error while downloading from https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin: HTTPSConnectionPool(host='cas-bridge.xethub.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-12-05 14:23:05 - WARNING: Error while downloading from https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin: HTTPSConnectionPool(host='cas-bridge.xethub.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-12-05 14:25:43 - WARNING: Error while downloading from https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin: HTTPSConnectionPool(host='cas-bridge.xethub.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-12-05 14:25:54 - WARNING: '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /vinai/phobert-base/resolve/main/pytorch_model.bin (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001F7AE704BE0>: Failed to resolve \'huggingface.co\' ([Errno 11002] getaddrinfo failed)"))'), '(Request ID: 1d0fba12-31a9-4de5-ab81-54aae6c39d82)')' thrown while requesting GET https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin
+2025-12-05 14:25:54 - WARNING: Retrying in 1s [Retry 1/5].
+2025-12-05 14:25:55 - WARNING: '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /vinai/phobert-base/resolve/main/pytorch_model.bin (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001F7AE704F10>: Failed to resolve \'huggingface.co\' ([Errno 11002] getaddrinfo failed)"))'), '(Request ID: 44d49bca-9ab3-4bad-aec5-3ab6d0e1b3d0)')' thrown while requesting GET https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin
+2025-12-05 14:25:55 - WARNING: Retrying in 2s [Retry 2/5].
+2025-12-05 14:25:57 - WARNING: '(MaxRetryError('HTTPSConnectionPool(host=\'huggingface.co\', port=443): Max retries exceeded with url: /vinai/phobert-base/resolve/main/pytorch_model.bin (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001F7AE704CD0>: Failed to resolve \'huggingface.co\' ([Errno 11002] getaddrinfo failed)"))'), '(Request ID: 450d0b27-bcbd-4fb5-aa66-383252829341)')' thrown while requesting GET https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin
+2025-12-05 14:25:57 - WARNING: Retrying in 4s [Retry 3/5].
+2025-12-05 14:26:30 - WARNING: Error while downloading from https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin: HTTPSConnectionPool(host='cas-bridge.xethub.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-12-05 14:27:43 - WARNING: Error while downloading from https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin: HTTPSConnectionPool(host='cas-bridge.xethub.hf.co', port=443): Read timed out.
+Trying to resume download...
+2025-12-05 14:28:34 - WARNING: '(MaxRetryError('HTTPSConnectionPool(host=\'cas-bridge.xethub.hf.co\', port=443): Max retries exceeded with url: /xet-bridge-us/621ffdc136468d709f1814a5/48e0cdcde28a0e74968d9f8e855ad70b07e76c11f1f993057e32c1e88057f6f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cas%2F20251205%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251205T070856Z&X-Amz-Expires=3600&X-Amz-Signature=c7420c59b6477ceeb0761b562aac76c38f2cb15360777720c129465a61bf7393&X-Amz-SignedHeaders=host&X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27pytorch_model.bin%3B+filename%3D%22pytorch_model.bin%22%3B&response-content-type=application%2Foctet-stream&x-id=GetObject&Expires=1764922136&Policy=eyJTdGF0ZW1lbnQiOlt7IkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc2NDkyMjEzNn19LCJSZXNvdXJjZSI6Imh0dHBzOi8vY2FzLWJyaWRnZS54ZXRodWIuaGYuY28veGV0LWJyaWRnZS11cy82MjFmZmRjMTM2NDY4ZDcwOWYxODE0YTUvNDhlMGNkY2RlMjhhMGU3NDk2OGQ5ZjhlODU1YWQ3MGIwN2U3NmMxMWYxZjk5MzA1N2UzMmMxZTg4MDU3ZjZmMSoifV19&Signature=PE6SKVqka98VMA4705HNJ2Bk0tAEO-hsoE2rSIlKv7IWZYIEJuwf5J6TV6WCaN~VQZYzFZXOU881dWFT1Q3XEO9LzN0poJ1ZYN5aC0jSAfZPECBuAXdZcqa5oauLcv2G6K7PHsMbKtfm4B671MiomjpR8i4tlGziMas3Mp~MT8cPZegoekFa7KUxvBcYFyUWqlf2zx1hfa7u8gmibh37G1gXrprrIKyXFLWtr210yYg5kJbLfrrDI85Rfvkpqg9kYSeGO1-HHo1hqRzliNFKNo9uSmcMyVPn1KiVtl9-B2oL~CHFruVbNx2mA6zP9q6tRDMd0~7WTj99UpSHskgCfQ__&Key-Pair-Id=K2L8F4GPSG1IFC (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001F7AE7048B0>: Failed to resolve \'cas-bridge.xethub.hf.co\' ([Errno 11002] getaddrinfo failed)"))'), '(Request ID: 2f76abe5-0352-4f14-8c9d-7d3d25c8ce4e)')' thrown while requesting GET https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin
+2025-12-05 14:28:34 - WARNING: Retrying in 1s [Retry 1/5].
+2025-12-05 14:28:43 - WARNING: '(ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')), '(Request ID: 1def468d-2ff8-4e41-8fcd-1184625007cf)')' thrown while requesting GET https://huggingface.co/vinai/phobert-base/resolve/main/pytorch_model.bin
+2025-12-05 14:28:43 - WARNING: Retrying in 2s [Retry 2/5].
+2025-12-05 14:33:03 - WARNING: Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`

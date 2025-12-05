@@ -61,6 +61,7 @@ class Trainer(object):
     def __init__(self, model):
         self.model = model
         self.criterion = nn.CrossEntropyLoss()
+        self.device = next(self.model.parameters()).device
 
         bert_params = set(self.model.bert.parameters())
         other_params = list(set(self.model.parameters()) - bert_params)
@@ -102,7 +103,7 @@ class Trainer(object):
         alpha = epoch / config.epochs
         # gamma = gamma ** 2
         for i, data_batch in enumerate(data_loader):
-            data_batch = [data.cuda() for data in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
+            data_batch = [data.to(self.device) for data in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
             inputs, att_mask, word_mask1d, word_mask2d, triu_mask2d, tri_labels, arg_labels, role_labels, event_idx, _, role_labels_num = data_batch
             # event_idx = [i for i in range(10)]
             # random.shuffle(event_idx)
@@ -114,7 +115,7 @@ class Trainer(object):
             # loss_mask = ((tri_labels > 0).long() + (arg_labels > 0).long()).gt(0)
             # r_logits = torch.cat([tri_logits.unsqueeze(-1), arg_logits.unsqueeze(-1)], dim=-1)
 
-            b_index = torch.arange(inputs.size(0)).long().cuda() * config.tri_label_num
+            b_index = torch.arange(inputs.size(0), device=inputs.device, dtype=torch.long) * config.tri_label_num
             event_idx = event_idx + b_index.unsqueeze(-1)
 
             B, L, L, _ = tri_labels.size()
@@ -194,7 +195,7 @@ class Trainer(object):
         total_results = {k + "_" + t: 0 for k in ["ti", "tc", "ai", "ac"] for t in ["r", "p", "c"]}
         with torch.no_grad():
             for i, data_batch in enumerate(data_loader):
-                data_batch = [data.cuda() for data in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
+                data_batch = [data.to(self.device) for data in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
                 inputs, att_mask, word_mask1d, word_mask2d, triu_mask2d, tri_labels, arg_labels, role_labels, event_idx, tuple_labels, _ = data_batch
                 results = model(inputs, att_mask, word_mask1d, word_mask2d, triu_mask2d, tri_labels, arg_labels, role_labels)
 
@@ -291,7 +292,8 @@ if __name__ == '__main__':
     logger.info("Building Model")
     model = Model(config)
 
-    model = model.cuda()
+    device = torch.device(f"cuda:{args.device}") if torch.cuda.is_available() else torch.device("cpu")
+    model = model.to(device)
 
     trainer = Trainer(model)
 

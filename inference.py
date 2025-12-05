@@ -187,13 +187,13 @@ def main():
 
     logger.info("Building Model")
     model = Model(cfg)
-    if torch.cuda.is_available():
-        model = model.cuda()
+    device = torch.device(f"cuda:{args.device}") if torch.cuda.is_available() else torch.device("cpu")
+    model = model.to(device)
 
     logger.info(f"Loading checkpoint from {args.ckpt}")
     state_dict = torch.load(
         args.ckpt,
-        map_location="cuda" if torch.cuda.is_available() else "cpu"
+        map_location=device
     )
     model.load_state_dict(state_dict)
     model.eval()
@@ -204,10 +204,7 @@ def main():
             i = 0
             logger.info(f"==== set ====")
             for batch_id, data_batch in enumerate(loader):
-                if torch.cuda.is_available():
-                    data_batch_cuda = [d.cuda() for d in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
-                else:
-                    data_batch_cuda = data_batch
+                data_batch_cuda = [d.to(device) for d in data_batch[:-2]] + [data_batch[-2], data_batch[-1]]
 
                 inputs, att_mask, word_mask1d, word_mask2d, triu_mask2d, tri_labels, arg_labels, role_labels, event_idx, tuple_labels, raw = data_batch_cuda
 
@@ -248,9 +245,9 @@ def main():
                         arg_text = " ".join(arg['tokens']) if arg['tokens'] is not None else ""
                         logger.info(f"    Arg span=({arg['start']},{arg['end']}) role_id={arg['role_id']} role={arg['role']} text=\"{arg_text}\"")
 
-                i += 1
-                if i == 5:
-                    break
+                # i += 1
+                # if i == 5:
+                #     break
 
 
 if __name__ == "__main__":
